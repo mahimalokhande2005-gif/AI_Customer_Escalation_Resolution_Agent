@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI Customer Escalation Resolution Agent</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background: #eef3f8;
+            color: #172033;
+        }
+
+        .container {
+            width: 94%;
+            max-width: 1200px;
+            margin: 25px auto;
+        }
+
+        /* HEADER */
+
+        header {
+            background: linear-gradient(135deg, #174ea6, #087fdb);
+            color: white;
+            padding: 30px;
+            border-radius: 18px;
+            text-align: center;
+            box-shadow: 0 5px 18px rgba(0,0,0,0.15);
+        }
+
+        header h1 {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 16px;
+        }
+
+        /* DASHBOARD */
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat {
+            background: white;
+            padding: 20px;
+            border-radius: 14px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+
+        .stat h3 {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .stat p {
+            font-size: 26px;
+            font-weight: bold;
+        }
+
+        /* MAIN */
+
+        .main {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        }
+
+        .card h2 {
+            margin-bottom: 18px;
+            font-size: 21px;
+        }
+
+        /* INPUT */
+
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 15px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            font-size: 16px;
+            resize: vertical;
+            outline: none;
+        }
+
+        textarea:focus {
+            border-color: #087fdb;
+        }
+
+        .button-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        button {
+            flex: 1;
+            padding: 13px;
+            border: none;
+            border-radius: 9px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .analyze-btn {
+            background: #087fdb;
+            color: white;
+        }
+
+        .analyze-btn:hover {
+            background: #075fa5;
+        }
+
+        .clear-btn {
+            background: #e5e7eb;
+            color: #222;
+        }
+
+        /* ANALYSIS */
+
+        .analysis-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 13px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .analysis-item:last-child {
+            border-bottom: none;
+        }
+
+        .value {
+            font-weight: bold;
+        }
+
+        /* BADGES */
+
+        .badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .low {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .medium {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .high {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .critical {
+            background: #7f1d1d;
+            color: white;
+        }
+
+        /* RESOLUTION */
+
+        .resolution {
+            background: #eff6ff;
+            border-left: 5px solid #087fdb;
+            padding: 18px;
+            border-radius: 8px;
+            line-height: 1.6;
+            min-height: 100px;
+        }
+
+        /* ESCALATION */
+
+        .escalation {
+            margin-top: 18px;
+            padding: 18px;
+            border-radius: 10px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .escalated {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+
+        .resolved {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #86efac;
+        }
+
+        /* HISTORY */
+
+        .history {
+            grid-column: 1 / -1;
+        }
+
+        .history-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+        }
+
+        .history-item strong {
+            color: #174ea6;
+        }
+
+        .history-empty {
+            color: #777;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* FOOTER */
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #666;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 800px) {
+
+            .dashboard {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .main {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+        @media (max-width: 500px) {
+
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 22px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+    <!-- HEADER -->
+
+    <header>
+
+        <h1>🤖 AI Customer Escalation Resolution Agent</h1>
+
+        <p>
+            Intelligent customer complaint analysis,
+            resolution and escalation system
+        </p>
+
+    </header>
+
+
+    <!-- DASHBOARD -->
+
+    <div class="dashboard">
+
+        <div class="stat">
+            <h3>Total Complaints</h3>
+            <p id="totalComplaints">0</p>
+        </div>
+
+        <div class="stat">
+            <h3>AI Resolved</h3>
+            <p id="resolvedComplaints">0</p>
+        </div>
+
+        <div class="stat">
+            <h3>Escalated</h3>
+            <p id="escalatedComplaints">0</p>
+        </div>
+
+        <div class="stat">
+            <h3>High Priority</h3>
+            <p id="highPriority">0</p>
+        </div>
+
+    </div>
+
+
+    <!-- MAIN -->
+
+    <div class="main">
+
+
+        <!-- CUSTOMER COMPLAINT -->
+
+        <div class="card">
+
+            <h2>📝 Customer Complaint</h2>
+
+            <textarea
+                id="complaint"
+                placeholder="Example: My payment failed but money was deducted from my account."
+            ></textarea>
+
+            <div class="button-row">
+
+                <button
+                    class="analyze-btn"
+                    onclick="analyzeComplaint()">
+                    🔍 Analyze Complaint
+                </button>
+
+                <button
+                    class="clear-btn"
+                    onclick="clearComplaint()">
+                    Clear
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- AI ANALYSIS -->
+
+        <div class="card">
+
+            <h2>🧠 AI Analysis</h2>
+
+            <div class="analysis-item">
+
+                <span>Category</span>
+
+                <span
+                    class="value"
+                    id="category">
+                    -
+                </span>
+
+            </div>
+
+
+            <div class="analysis-item">
+
+                <span>Priority</span>
+
+                <span
+                    class="value"
+                    id="priority">
+                    -
+                </span>
+
+            </div>
+
+
+            <div class="analysis-item">
+
+                <span>Sentiment</span>
+
+                <span
+                    class="value"
+                    id="sentiment">
+                    -
+                </span>
+
+            </div>
+
+
+            <div class="analysis-item">
+
+                <span>Recommended Action</span>
+
+                <span
+                    class="value"
+                    id="action">
+                    -
+                </span>
+
+            </div>
+
+
+            <div class="analysis-item">
+
+                <span>Ticket ID</span>
+
+                <span
+                    class="value"
+                    id="ticketId">
+                    -
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- RESOLUTION -->
+
+        <div class="card">
+
+            <h2>💡 Suggested Resolution</h2>
+
+            <div
+                id="resolution"
+                class="resolution">
+
+                Submit a customer complaint
+                to receive an AI-generated resolution.
+
+            </div>
+
+        </div>
+
+
+        <!-- ESCALATION -->
+
+        <div class="card">
+
+            <h2>🚨 Escalation Status</h2>
+
+            <div
+                id="escalation"
+                class="escalation resolved">
+
+                No complaint analyzed yet.
+
+            </div>
+
+        </div>
+
+
+        <!-- HISTORY -->
+
+        <div class="card history">
+
+            <h2>📋 Complaint History</h2>
+
+            <div
+                id="history"
+                class="history-empty">
+
+                No complaints analyzed yet.
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <footer>
+
+        AI Customer Escalation Resolution Agent |
+        Prototype
+
+    </footer>
+
+</div>
+
+
+<script>
+
+    /* =========================
+       GLOBAL VARIABLES
+    ========================= */
+
+    let total = 0;
+    let resolved = 0;
+    let escalated = 0;
+    let high = 0;
+
+
+    /* =========================
+       MAIN AI FUNCTION
+    ========================= */
+
+    function analyzeComplaint() {
+
+        const input =
+            document.getElementById("complaint").value.trim();
+
+
+        /* Empty input */
+
+        if (input === "") {
+
+            alert("Please enter a customer complaint.");
+
+            return;
+
+        }
+
+
+        const text = input.toLowerCase();
+
+
+        let category = "General Query";
+
+        let priority = "Low";
+
+        let sentiment = "Neutral";
+
+        let action = "Provide standard customer support.";
+
+        let resolution =
+            "Provide the customer with relevant information and standard support.";
+
+        let shouldEscalate = false;
+
+
+        /* =========================
+           PAYMENT
+        ========================= */
+
+        if (
+            text.includes("payment") ||
+            text.includes("money") ||
+            text.includes("transaction") ||
+            text.includes("refund") ||
+            text.includes("charged")
+        ) {
+
+            category = "Payment Issue";
+
+            priority = "High";
+
+            sentiment = "Negative";
+
+            action = "Verify payment transaction.";
+
+            resolution =
+                "Verify the transaction status. " +
+                "If money was deducted but the transaction failed, " +
+                "check refund eligibility and provide the customer " +
+                "with the refund status.";
+
+            shouldEscalate = true;
+
+        }
+
+
+        /* =========================
+           LOGIN / ACCOUNT
+        ========================= */
+
+        else if (
+            text.includes("login") ||
+            text.includes("password") ||
+            text.includes("account") ||
+            text.includes("sign in")
+        ) {
+
+            category = "Account / Login Issue";
+
+            priority = "Medium";
+
+            sentiment = "Negative";
+
+            action = "Provide account recovery support.";
+
+            resolution =
+                "Guide the customer through password reset " +
+                "and verify account access.";
+
+        }
+
+
+        /* =========================
+           DELIVERY
+        ========================= */
+
+        else if (
+            text.includes("delivery") ||
+            text.includes("order") ||
+            text.includes("shipping") ||
+            text.includes("late")
+        ) {
+
+            category = "Order / Delivery Issue";
+
+            priority = "Medium";
+
+            sentiment = "Negative";
+
+            action = "Check order tracking.";
+
+            resolution =
+                "Check the order tracking information " +
+                "and provide the latest delivery status.";
+
+        }
+
+
+        /* =========================
+           TECHNICAL ISSUE
+        ========================= */
+
+        else if (
+            text.includes("app") ||
+            text.includes("website") ||
+            text.includes("error") ||
+            text.includes("not working") ||
+            text.includes("bug")
+        ) {
+
+            category = "Technical Issue";
+
+            priority = "Medium";
+
+            sentiment = "Negative";
+
+            action = "Create technical support ticket.";
+
+            resolution =
+                "Collect the error details, device information " +
+                "and reproduce the issue. Assign the case to " +
+                "the technical support team if required.";
+
+        }
+
+
+        /* =========================
+           FRAUD / SECURITY
+        ========================= */
+
+        else if (
+            text.includes("fraud") ||
+            text.includes("scam") ||
+            text.includes("hack") ||
+            text.includes("stolen") ||
+            text.includes("unauthorized")
+        ) {
+
+            category = "Security / Fraud";
+
+            priority = "Critical";
+
+            sentiment = "Very Negative";
+
+            action = "Immediate security team intervention.";
+
+            resolution =
+                "Immediately secure the account, verify the " +
+                "customer identity through the approved process " +
+                "and escalate the case to the security team.";
+
+            shouldEscalate = true;
+
+        }
+
+
+        /* =========================
+           ANGRY CUSTOMER
+        ========================= */
+
+        else if (
+            text.includes("angry") ||
+            text.includes("worst") ||
+            text.includes("terrible") ||
+            text.includes("useless") ||
+            text.includes("complaint")
+        ) {
+
+            category = "Critical Customer Complaint";
+
+            priority = "High";
+
+            sentiment = "Very Negative";
+
+            action = "Senior customer support intervention.";
+
+            resolution =
+                "Acknowledge the customer's concern, " +
+                "review the case history and assign it to " +
+                "a senior support agent.";
+
+            shouldEscalate = true;
+
+        }
+
+
+        /* =========================
+           POSITIVE / GENERAL
+        ========================= */
+
+        else {
+
+            category = "General Query";
+
+            priority = "Low";
+
+            sentiment = "Neutral";
+
+            action = "AI-assisted standard support.";
+
+            resolution =
+                "Analyze the customer's request and provide " +
+                "the relevant information or standard solution.";
+
+        }
+
+
+        /* =========================
+           TICKET ID
+        ========================= */
+
+        const ticketId =
+            "TKT-" +
+            Date.now().toString().slice(-6);
+
+
+        /* =========================
+           UPDATE DASHBOARD
+        ========================= */
+
+        total++;
+
+
+        if (shouldEscalate) {
+
+            escalated++;
+
+        } else {
+
+            resolved++;
+
+        }
+
+
+        if (
+            priority === "High" ||
+            priority === "Critical"
+        ) {
+
+            high++;
+
+        }
+
+
+        document.getElementById("totalComplaints")
+            .innerText = total;
+
+        document.getElementById("resolvedComplaints")
+            .innerText = resolved;
+
+        document.getElementById("escalatedComplaints")
+            .innerText = escalated;
+
+        document.getElementById("highPriority")
+            .innerText = high;
+
+
+        /* =========================
+           DISPLAY CATEGORY
+        ========================= */
+
+        document.getElementById("category")
+            .innerText = category;
+
+
+        /* =========================
+           DISPLAY PRIORITY
+        ========================= */
+
+        const priorityElement =
+            document.getElementById("priority");
+
+
+        priorityElement.innerText = priority;
+
+        priorityElement.className =
+            "value badge " +
+            priority.toLowerCase();
+
+
+        /* =========================
+           SENTIMENT
+        ========================= */
+
+        document.getElementById("sentiment")
+            .innerText = sentiment;
+
+
+        /* =========================
+           ACTION
+        ========================= */
+
+        document.getElementById("action")
+            .innerText = action;
+
+
+        /* =========================
+           TICKET
+        ========================= */
+
+        document.getElementById("ticketId")
+            .innerText = ticketId;
+
+
+        /* =========================
+           RESOLUTION
+        ========================= */
+
+        document.getElementById("resolution")
+            .innerText = resolution;
+
+
+        /* =========================
+           ESCALATION
+        ========================= */
+
+        const escalationElement =
+            document.getElementById("escalation");
+
+
+        if (shouldEscalate) {
+
+            escalationElement.className =
+                "escalation escalated";
+
+            escalationElement.innerHTML =
+                "⚠️ ESCALATED TO HUMAN AGENT<br>" +
+                "<small>High/Critical priority case requires human intervention.</small>";
+
+        } else {
+
+            escalationElement.className =
+                "escalation resolved";
+
+            escalationElement.innerHTML =
+                "✅ AI RESOLUTION AVAILABLE<br>" +
+                "<small>Complaint can be handled by the AI support workflow.</small>";
+
+        }
+
+
+        /* =========================
+           ADD HISTORY
+        ========================= */
+
+        addHistory(
+            ticketId,
+            category,
+            priority,
+            input,
+            shouldEscalate
+        );
+
+    }
+
+
+    /* =========================
+       HISTORY FUNCTION
+    ========================= */
+
+    function addHistory(
+        ticketId,
+        category,
+        priority,
+        complaint,
+        escalatedCase
+    ) {
+
+        const history =
+            document.getElementById("history");
+
+
+        if (
+            history.classList.contains("history-empty")
+        ) {
+
+            history.innerHTML = "";
+
+            history.classList.remove("history-empty");
+
+        }
+
+
+        const item =
+            document.createElement("div");
+
+
+        item.className = "history-item";
+
+
+        item.innerHTML =
+
+            "<strong>" + ticketId + "</strong><br>" +
+
+            "<b>Category:</b> " +
+            category + "<br>" +
+
+            "<b>Priority:</b> " +
+            priority + "<br>" +
+
+            "<b>Complaint:</b> " +
+            complaint + "<br>" +
+
+            "<b>Status:</b> " +
+
+            (
+                escalatedCase
+                ? "⚠️ Escalated"
+                : "✅ AI Resolved"
+            );
+
+
+        history.prepend(item);
+
+    }
+
+
+    /* =========================
+       CLEAR FUNCTION
+    ========================= */
+
+    function clearComplaint() {
+
+        document.getElementById("complaint")
+            .value = "";
+
+    }
+
+</script>
+
+
+</body>
+
+</html>
